@@ -1,4 +1,4 @@
-function CCShortcutKeys(thisObj) {
+(function (thisObj) {
     var Info = {
         scriptName: "CC 快捷键",
         version: "0.0.5",
@@ -225,7 +225,6 @@ function CCShortcutKeys(thisObj) {
             layer.transform.opacity.setValueAtKey(1, 0);
             layer.transform.opacity.setValueAtKey(4, 0);
         }
-        transComp.onClick = function () { selectedLayerHandler(transCompHandler); }
 
         // glitchCompButton Function
         function glitchCompHandler(comp, layer) {
@@ -235,17 +234,15 @@ function CCShortcutKeys(thisObj) {
             }
         }
         glitchComp.onClick = function () { selectedLayerHandler(glitchCompHandler); }
-        return dialog;
+        if (dialog instanceof Window) {
+            dialog.center();
+            dialog.show();
+        } else {
+            dialog.layout.layout(true);
+        }
     }
-    
-    var scriptPanel = buildUI(thisObj);
-    if ((scriptPanel !== null) && (scriptPanel instanceof Window)) {
-		scriptPanel.center();
-		scriptPanel.show();
-	}
-}
-
 ////////////////////////////
 // build the user interface
 ////////////////////////////
-CCShortcutKeys(this);
+    buildUI(thisObj);
+})(this);
