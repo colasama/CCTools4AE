@@ -25,7 +25,7 @@ function CCShortcutKeys(thisObj) {
         // DIALOG
         // ======
         // var dialog = new Window("dialog");
-        var dialog = (thisObj instanceof Panel) ? thisObj : new Window("dialog");
+        var dialog = (thisObj instanceof Panel) ? thisObj : new Window("palette");
         dialog.text = Info.scriptName + " v" + Info.version; 
         dialog.alignChildren = ["center","top"]; 
         dialog.spacing = 10; 
@@ -56,10 +56,12 @@ function CCShortcutKeys(thisObj) {
         adaptComp.text = "适应复合"; 
     
         var pointCenter = group1.add("button", undefined, undefined, {name: "pointCenter"}); 
+        adaptComp.helpTip = "使当前选中的图层锚点居中并整体居中。"; 
         pointCenter.text = "锚点居中"; 
     
         var centerComp = group1.add("button", undefined, undefined, {name: "centerComp"}); 
         centerComp.text = "复合居中"; 
+        centerComp.helpTip = "WIP";
         
         // 图层操作部分
         // PANEL1
@@ -76,7 +78,9 @@ function CCShortcutKeys(thisObj) {
         group2.alignChildren = ["left","center"]; 
         group2.spacing = 10; 
         group2.margins = 0; 
-    
+        
+        var transValue = group2.add("edittext");
+        
         var transComp = group2.add("button", undefined, undefined, {name: "transComp"}); 
         transComp.helpTip = "使当前选中的图层前后渐隐。"; 
         transComp.text = "前后渐隐";
@@ -89,12 +93,32 @@ function CCShortcutKeys(thisObj) {
         adaptComp.onClick = function () {
             if(app.project.activeItem instanceof CompItem) {
                 var comp = app.project.activeItem;
-                alert(app.project.activeItem);
-                alert(comp.selectedLayers[0]);
-                // 如果大于16:9则按照宽度，反之按照长度设置
-                // var layer = getLayers();
-                // alert(layer.name);
-                // alert(app.project.activeItem.width, app.project.activeItem.height);
+                for(var i=0; i<comp.selectedLayers.length; i++) {
+                    var layer = comp.selectedLayers[i];
+                    if(layer.height != 0) {
+                        var originRatio = layer.width / layer.height;
+                        if(originRatio <= 16.78) {
+                            var scaleValue = layer.height / comp.height;
+                        } else {
+                            var scaleValue = layer.width / comp.width;
+                        }
+                        layer.transform.scale.setValue([100/scaleValue, 100/scaleValue, 100/scaleValue]);
+                    }
+                }
+            }
+        }
+
+        // pointCenterButton Function
+        pointCenter.onClick = function () {
+            if(app.project.activeItem instanceof CompItem) {
+                var comp = app.project.activeItem;
+                for(var i=0; i<comp.selectedLayers.length; i++) {
+                    var layer = comp.selectedLayers[i];
+                    if(layer.height != 0) {
+                        layer.transform.anchorPoint.setValue([layer.width/2, layer.height/2, 0]);
+                        layer.transform.position.setValue([comp.width/2, comp.height/2]);
+                    }
+                }
             }
         }
         return dialog;
