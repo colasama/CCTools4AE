@@ -20,7 +20,7 @@ function CCShortcutKeys(thisObj) {
         // PANEL1
         // ======
         var panel1 = dialog.add("panel", undefined, undefined, {name: "panel1"}); 
-        panel1.text = "第一批"; 
+        panel1.text = "快捷操作"; 
         panel1.orientation = "row"; 
         panel1.alignChildren = ["left","top"]; 
         panel1.spacing = 10; 
@@ -126,52 +126,47 @@ function CCShortcutKeys(thisObj) {
         frameExtract.helpTip = "在合成帧率不变的情况下改变图层帧率。"; 
         frameExtract.text = "图层抽帧"; 
         //////////////////////////////////////////////////////
+        // layer handler function
+        function selectedLayerHandler(process) {
+            if(app.project.activeItem instanceof CompItem) {
+                var comp = app.project.activeItem;
+                for(var i=0; i<comp.selectedLayers.length; i++) {
+                    var layer = comp.selectedLayers[i];
+                    process(comp, layer);
+                }
+            }
+        }
         // adaptCompButton Function
-        adaptComp.onClick = function () {
-            if(app.project.activeItem instanceof CompItem) {
-                var comp = app.project.activeItem;
-                for(var i=0; i<comp.selectedLayers.length; i++) {
-                    var layer = comp.selectedLayers[i];
-                    if(layer.height != 0) {
-                        var originRatio = layer.width / layer.height;
-                        if(originRatio <= 16.78) {
-                            var scaleValue = layer.height / comp.height;
-                        } else {
-                            var scaleValue = layer.width / comp.width;
-                        }
-                        layer.transform.scale.setValue([100/scaleValue, 100/scaleValue, 100/scaleValue]);
-                    }
+        function adaptCompHandler(comp, layer) {
+            if(layer.height != 0) {
+                var originRatio = layer.width / layer.height;
+                if(originRatio <= 16.78) {
+                    var scaleValue = layer.height / comp.height;
+                } else {
+                    var scaleValue = layer.width / comp.width;
                 }
+                layer.transform.scale.setValue([100/scaleValue, 100/scaleValue, 100/scaleValue]);
+                layer.transform.position.setValue([comp.width/2, comp.height/2, 0]);
             }
         }
+        adaptComp.onClick = function () { selectedLayerHandler(adaptCompHandler); }
 
         // pointCenterButton Function
-        pointCenter.onClick = function () {
-            if(app.project.activeItem instanceof CompItem) {
-                var comp = app.project.activeItem;
-                for(var i=0; i<comp.selectedLayers.length; i++) {
-                    var layer = comp.selectedLayers[i];
-                    if(layer.height != 0) {
-                        layer.transform.anchorPoint.setValue([layer.width/2, layer.height/2, 0]);
-                        layer.transform.position.setValue([comp.width/2, comp.height/2]);
-                    }
-                }
+        function pointCenterHandler(comp, layer) {
+            if(layer.height != 0) {
+                layer.transform.anchorPoint.setValue([layer.width/2, layer.height/2, 0]);
             }
         }
+        pointCenter.onClick = function () { selectedLayerHandler(pointCenterHandler); }
 
-        // pointCenterButton Function
-        pointCenter.onClick = function () {
-            if(app.project.activeItem instanceof CompItem) {
-                var comp = app.project.activeItem;
-                for(var i=0; i<comp.selectedLayers.length; i++) {
-                    var layer = comp.selectedLayers[i];
-                    if(layer.height != 0) {
-                        layer.transform.anchorPoint.setValue([layer.width/2, layer.height/2, 0]);
-                        layer.transform.position.setValue([comp.width/2, comp.height/2]);
-                    }
-                }
+        // centerCompButton Function
+        function centerCompHandler(comp, layer) {
+            if(layer.height != 0) {
+                layer.transform.position.setValue([comp.width/2, comp.height/2, 0]);
             }
         }
+        centerComp.onClick = function () { selectedLayerHandler(centerCompHandler); }
+        
         return dialog;
     }
     
