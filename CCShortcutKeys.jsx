@@ -225,6 +225,7 @@
             layer.transform.opacity.setValueAtKey(1, 0);
             layer.transform.opacity.setValueAtKey(4, 0);
         }
+        transComp.onClick = function () { selectedLayerHandler(transCompHandler); }
 
         // glitchCompButton Function
         function glitchCompHandler(comp, layer) {
